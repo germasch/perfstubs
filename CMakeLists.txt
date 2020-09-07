@@ -22,7 +22,7 @@ endif ()
 # for the examples only
 set (CMAKE_CXX_STANDARD 11)
 
-project (perfstubs)
+project (PerfStubs VERSION 0.1)
 
 # should we use our own implementation of timers (for examples)?
 option (PERFSTUBS_USE_TIMERS
@@ -71,11 +71,6 @@ else (PERFSTUBS_USE_STATIC)
     set (BUILD_SHARED_LIBS ON)
     message(STATUS "Building shared object libraries and dynamic executables.")
 endif (PERFSTUBS_USE_STATIC)
-
-# The version number.
-set (PerfStubs_VERSION_MAJOR 0)
-set (PerfStubs_VERSION_MINOR 1)
-set (PerfStubs_VERSION ${PerfStubs_VERSION_MAJOR}.${PerfStubs_VERSION_MINOR})
 
 set (CMAKE_CXX_STANDARD 11)
 #set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pthread")
