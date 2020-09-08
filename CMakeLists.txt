@@ -208,6 +208,9 @@ if(PERFSTUBS_BUILD_MULTI_TOOL)
     CONFIGURE_FILE("etc/perfstubs_n.pc.in" "${PROJECT_BINARY_DIR}/perfstubs_n.pc" @ONLY)
 endif(PERFSTUBS_BUILD_MULTI_TOOL)
 
+include(GNUInstallDirs)
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/perfstubs)
+
 # Add all targets to the build-tree export set
 export(TARGETS perfstubs
   FILE "${PROJECT_BINARY_DIR}/PerfStubsTargets.cmake")
@@ -219,49 +222,69 @@ export(PACKAGE PerfStubs)
 foreach(LIB perfstubs dl m)
     set(PRIVATE_CMAKE_LIBS "${PRIVATE_CMAKE_LIBS} ${LIB}")
 endforeach()
-CONFIGURE_FILE("etc/perfstubs-config.cmake.in"
-    "${PROJECT_BINARY_DIR}/perfstubs-config.cmake" @ONLY)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    etc/perfstubs-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/perfstubs-config.cmake
+    INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/perfstubs-config-version.cmake
+    COMPATIBILITY SameMinorVersion)
 
 if(PERFSTUBS_BUILD_MULTI_TOOL)
     foreach(LIB perfstubs_n m)
         set(PRIVATE_CMAKE_LIBS "${PRIVATE_CMAKE_LIBS} ${LIB}")
     endforeach()
-    CONFIGURE_FILE("etc/perfstubs_n-config.cmake.in"
-        "${PROJECT_BINARY_DIR}/perfstubs_n-config.cmake" @ONLY)
+    configure_package_config_file(
+        etc/perfstubs_n-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/perfstubs_n-config.cmake
+        INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/perfstubs_n-config-version.cmake
+        COMPATIBILITY SameMinorVersion)
 endif(PERFSTUBS_BUILD_MULTI_TOOL)
 
 if(PERFSTUBS_BUILD_MULTI_TOOL)
     install (TARGETS perfstubs perfstubs_n
         EXPORT PerfStubsTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT library
     )
 else(PERFSTUBS_BUILD_MULTI_TOOL)
     install (TARGETS perfstubs
         EXPORT PerfStubsTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT library
     )
 endif(PERFSTUBS_BUILD_MULTI_TOOL)
 
-install (FILES perfstubs_api/timer.h DESTINATION include/perfstubs_api)
-install (FILES perfstubs_api/timer_f.h DESTINATION include/perfstubs_api)
-install (FILES perfstubs_api/tool.h DESTINATION include/perfstubs_api)
-install (FILES ${PROJECT_BINARY_DIR}/perfstubs_api/config.h DESTINATION include/perfstubs_api)
+install(
+    FILES
+        perfstubs_api/timer.h perfstubs_api/timer_f.h perfstubs_api/tool.h
+        ${PROJECT_BINARY_DIR}/perfstubs_api/config.h
+    DESTINATION
+	${CMAKE_INSTALL_INCLUDEDIR}/perfstubs_api)
 install (FILES ${PROJECT_BINARY_DIR}/perfstubs.pc DESTINATION lib/pkgconfig)
-install (FILES ${PROJECT_BINARY_DIR}/perfstubs-config.cmake
-    DESTINATION lib/cmake)
+install (FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/perfstubs-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/perfstubs-config-version.cmake
+    DESTINATION ${INSTALL_CONFIGDIR})
 
 if(PERFSTUBS_BUILD_MULTI_TOOL)
     install (FILES ${PROJECT_BINARY_DIR}/perfstubs_n.pc DESTINATION lib/pkgconfig)
-    install (FILES ${PROJECT_BINARY_DIR}/perfstubs_n-config.cmake
-        DESTINATION lib/cmake)
+    install (FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/perfstubs-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/perfstubs_n-config-version.cmake
+        DESTINATION ${INSTALL_CONFIGDIR})
 endif(PERFSTUBS_BUILD_MULTI_TOOL)
 
 # Install the export set for use with the install-tree
 install(EXPORT PerfStubsTargets
-  DESTINATION lib/cmake
+  FILE perfstubs-targets.cmake
+  NAMESPACE perfstubs::
+  DESTINATION ${INSTALL_CONFIGDIR}
   COMPONENT library)
 

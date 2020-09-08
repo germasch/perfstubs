@@ -3,19 +3,34 @@
 #  PERFSTUBS_INCLUDE_DIRS - include directories for PerfStubs
 #  PERFSTUBS_LIBRARIES    - libraries to link against
 
-set(PACKAGE_VERSION "@PerfStubs_VERSION@")
+@PACKAGE_INIT@
 
-# Compute paths
-get_filename_component(PERFSTUBS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(PERFSTUBS_INCLUDE_DIRS "@DEST_DIR@/include")
+include("${CMAKE_CURRENT_LIST_DIR}/perfstubs-targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/perfstubs-config-version.cmake")
 
-# Our library dependencies (contains definitions for IMPORTED targets)
-if(NOT TARGET perfstubs AND NOT PerfStubs_BINARY_DIR)
-  include("${PERFSTUBS_CMAKE_DIR}/PerfStubsTargets.cmake")
-endif()
+check_required_components(perfstubs)
 
-# none to speak of, for now
-set(PERFSTUBS_COMPILE_OPTIONS "")
+set(${CMAKE_FIND_PACKAGE_NAME}_CONFIG "${CMAKE_CURRENT_LIST_FILE}")
 
-# These are IMPORTED targets created by PerfStubsTargets.cmake
-set(PERFSTUBS_LIBRARIES @PRIVATE_CMAKE_LIBS@)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(${CMAKE_FIND_PACKAGE_NAME} CONFIG_MODE)
+
+
+
+
+# set(PACKAGE_VERSION "@PerfStubs_VERSION@")
+
+# # Compute paths
+# get_filename_component(PERFSTUBS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+# set(PERFSTUBS_INCLUDE_DIRS "@DEST_DIR@/include")
+
+# # Our library dependencies (contains definitions for IMPORTED targets)
+# if(NOT TARGET perfstubs AND NOT PerfStubs_BINARY_DIR)
+#   include("${PERFSTUBS_CMAKE_DIR}/PerfStubsTargets.cmake")
+# endif()
+
+# # none to speak of, for now
+# set(PERFSTUBS_COMPILE_OPTIONS "")
+
+# # These are IMPORTED targets created by PerfStubsTargets.cmake
+# set(PERFSTUBS_LIBRARIES @PRIVATE_CMAKE_LIBS@)
